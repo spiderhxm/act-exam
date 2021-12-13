@@ -1,4 +1,4 @@
-package org.activiti.examples;
+package org.activiti.examples.service;
 
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;

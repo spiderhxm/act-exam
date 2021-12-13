@@ -14,6 +14,8 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -33,9 +35,9 @@ import javax.annotation.Resource;
 
 @SpringBootApplication
 @EnableIntegration
-public class DemoApplication implements InitializingBean
+public class DemoApplication implements ApplicationRunner
         //implements CommandLineRunner
-        {
+{
     @Resource(name = "repositoryService")
     private RepositoryService repositoryService;
     @Resource(name = "runtimeService")
@@ -52,18 +54,18 @@ public class DemoApplication implements InitializingBean
 
     }
 
-
-    public void run(String... args) {
+    @Override
+    public void run(ApplicationArguments args) {
 
         Deployment deployment = this.repositoryService.createDeployment().addClasspathResource("processes/categorize-text.bpmn20.xml")
                 .deploy();
 
-        logger.info("> Deployment: " + deployment.getName());
+        logger.info("> Deployment Id: " + deployment.getId());
 
     }
 
-    @Bean({ "processEngine" })
-    public ProcessEngine getProcessEngine(){
+    @Bean({"processEngine"})
+    public ProcessEngine getProcessEngine() {
         ProcessEngine processEngine = ProcessEngineConfiguration.createStandaloneInMemProcessEngineConfiguration()
                 //.setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_FALSE)
                 .setJdbcUrl("jdbc:h2:mem:my-own-db;DB_CLOSE_DELAY=1000")
@@ -72,27 +74,27 @@ public class DemoApplication implements InitializingBean
         return processEngine;
     }
 
-    @Bean({ "repositoryService" })
+    @Bean({"repositoryService"})
     public RepositoryService repositoryService() {
         return getProcessEngine().getRepositoryService();
     }
 
-    @Bean({ "runtimeService" })
+    @Bean({"runtimeService"})
     public RuntimeService runtimeService() {
         return getProcessEngine().getRuntimeService();
     }
 
-    @Bean({ "taskService" })
+    @Bean({"taskService"})
     public TaskService taskService() {
         return getProcessEngine().getTaskService();
     }
 
-    @Bean({ "historyService" })
+    @Bean({"historyService"})
     public HistoryService historyService() {
         return getProcessEngine().getHistoryService();
     }
 
-    @Bean({ "identityService" })
+    @Bean({"identityService"})
     public IdentityService identityService() {
         return getProcessEngine().getIdentityService();
     }
@@ -134,8 +136,4 @@ public class DemoApplication implements InitializingBean
     }
 
 
-            @Override
-            public void afterPropertiesSet() throws Exception {
-                this.run();
-            }
-        }
+}
