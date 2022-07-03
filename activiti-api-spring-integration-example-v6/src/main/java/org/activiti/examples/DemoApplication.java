@@ -1,9 +1,13 @@
 package org.activiti.examples;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.activiti.engine.*;
 import org.activiti.engine.delegate.ExecutionListener;
@@ -35,7 +39,7 @@ import javax.annotation.Resource;
 @EnableIntegration
 public class DemoApplication implements InitializingBean
         //implements CommandLineRunner
-        {
+{
     @Resource(name = "repositoryService")
     private RepositoryService repositoryService;
     @Resource(name = "runtimeService")
@@ -55,47 +59,21 @@ public class DemoApplication implements InitializingBean
 
     public void run(String... args) {
 
-        Deployment deployment = this.repositoryService.createDeployment().addClasspathResource("processes/categorize-text.bpmn20.xml")
-                .deploy();
+        //Deployment deployment = this.repositoryService.createDeployment().addClasspathResource("processes/categorize-text.bpmn20.xml")
+        //  .deploy();
+
+
+        final DeploymentBuilder deploymentBuilder = this.repositoryService.createDeployment();
+
+        deploymentBuilder.addClasspathResource("processes/categorize-text.bpmn20.xml");
+        deploymentBuilder.key("categorizeProcess");
+
+        Deployment deployment = deploymentBuilder.deploy();
 
         logger.info("> Deployment: " + deployment.getName());
 
     }
 
-    @Bean({ "processEngine" })
-    public ProcessEngine getProcessEngine(){
-        ProcessEngine processEngine = ProcessEngineConfiguration.createStandaloneInMemProcessEngineConfiguration()
-                //.setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_FALSE)
-                .setJdbcUrl("jdbc:h2:mem:my-own-db;DB_CLOSE_DELAY=1000")
-                .setAsyncExecutorActivate(false)
-                .buildProcessEngine();
-        return processEngine;
-    }
-
-    @Bean({ "repositoryService" })
-    public RepositoryService repositoryService() {
-        return getProcessEngine().getRepositoryService();
-    }
-
-    @Bean({ "runtimeService" })
-    public RuntimeService runtimeService() {
-        return getProcessEngine().getRuntimeService();
-    }
-
-    @Bean({ "taskService" })
-    public TaskService taskService() {
-        return getProcessEngine().getTaskService();
-    }
-
-    @Bean({ "historyService" })
-    public HistoryService historyService() {
-        return getProcessEngine().getHistoryService();
-    }
-
-    @Bean({ "identityService" })
-    public IdentityService identityService() {
-        return getProcessEngine().getIdentityService();
-    }
 
     @Bean
     public MessageChannel fileChannel() {
@@ -121,9 +99,12 @@ public class DemoApplication implements InitializingBean
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yy HH:mm:ss");
 
         logger.info("> Processing content: " + content + " at " + formatter.format(new Date()));
+        Map<String, Object> params = new HashMap<>();
+        params.put("content", content);
         long start = System.currentTimeMillis();
-        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("categorizeProcess");
-
+        logger.info("--------->start process");
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("categorizeProcess", params);
+        logger.info("--------->end process");
         long costTime = System.currentTimeMillis() - start;
         logger.info("Activiti End, cost={} ", (Object) costTime);
         logger.info(">>> Created Process Instance: " + processInstance);
@@ -134,8 +115,8 @@ public class DemoApplication implements InitializingBean
     }
 
 
-            @Override
-            public void afterPropertiesSet() throws Exception {
-                this.run();
-            }
-        }
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.run();
+    }
+}

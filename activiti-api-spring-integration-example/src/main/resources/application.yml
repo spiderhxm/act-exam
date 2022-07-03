@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:mysql://9.134.93.226:3306/act6_test?useUnicode=true&characterEncoding=UTF-8&useSSL=false&sessionVariables=sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'
+    username: root
+    driver-class-name: com.mysql.jdbc.Driver
+    password: ape@1234
+    tomcat:
+      max-active: 1000
+      max-idle: 1000
