@@ -18,6 +18,8 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -37,7 +39,7 @@ import javax.annotation.Resource;
 
 @SpringBootApplication
 @EnableIntegration
-public class DemoApplication implements InitializingBean
+public class DemoApplication implements ApplicationRunner
         //implements CommandLineRunner
 {
     @Resource(name = "repositoryService")
@@ -56,11 +58,12 @@ public class DemoApplication implements InitializingBean
 
     }
 
-
-    public void run(String... args) {
+    @Override
+    public void run(ApplicationArguments args) {
 
         //Deployment deployment = this.repositoryService.createDeployment().addClasspathResource("processes/categorize-text.bpmn20.xml")
         //  .deploy();
+
 
 
         final DeploymentBuilder deploymentBuilder = this.repositoryService.createDeployment();
@@ -115,8 +118,4 @@ public class DemoApplication implements InitializingBean
     }
 
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        this.run();
-    }
 }

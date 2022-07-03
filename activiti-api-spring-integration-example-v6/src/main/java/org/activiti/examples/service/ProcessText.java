@@ -1,9 +1,10 @@
-package org.activiti.examples;
+package org.activiti.examples.service;
 
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ import java.util.Map;
  * @date ：2021/12/12 4:54 下午
  */
 @Service(value="processText")
-public class ProcessText implements JavaDelegate {
+public class ProcessText implements JavaDelegate , InitializingBean {
     private Logger logger = LoggerFactory.getLogger(ProcessText.class);
     @Override
     public void execute(DelegateExecution execution) {
@@ -31,5 +32,10 @@ public class ProcessText implements JavaDelegate {
             execution.setVariable("approved",
                     false);
         }
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        logger.info("ProcessText initialized!");
     }
 }
